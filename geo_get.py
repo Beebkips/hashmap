@@ -1,5 +1,6 @@
 import os
 import time
+import datetime
 import json
 import requests
 import exifread
@@ -9,14 +10,15 @@ if __name__ == "__main__":
     # data = json.loads(call.text)
     # print data
 
-    f = open('geotest.jpg', 'rb')
+    f = open('geotest2.jpg', 'rb')
     tags = exifread.process_file(f)
-    # print tags
+    print tags.keys()
 
     lon = tags['GPS GPSLongitude'].values[0].num
     lonRef = tags['GPS GPSLongitudeRef'].values.encode('ascii', 'ingore')
     lat = tags['GPS GPSLatitude'].values[0].num
     latRef = tags['GPS GPSLatitudeRef'].values.encode('ascii', 'ingore')
+
 
     if latRef == 'S':
         lat = lat * -1
@@ -27,6 +29,11 @@ if __name__ == "__main__":
     call2 = requests.get(requrl)
     data2 = json.loads(call2.text)
     print data2
+
+    # date = tags['Image DateTime'].values.encode('ascii', 'ignore')
+    # print date
+    # utime = time.mktime(datetime.datetime.strptime(date, "%Y:%m:%d %H:%M:%S").timetuple())
+    # print utime
 
     # print tags.keys()
 
