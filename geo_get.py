@@ -31,13 +31,20 @@ if __name__ == "__main__":
 
     f = open('geotest.jpg', 'rb')
     tags = exifread.process_file(f)
-    print tags.keys()
+    # print tags.keys()
 
-    lon = tags['GPS GPSLongitude'].values[0].num
+    print tags['GPS GPSLongitude'].values[0].num, tags['GPS GPSLongitude'].values[1].num, tags['GPS GPSLongitude'].values[2]
+    a = `tags['GPS GPSLongitude'].values[2]`
+    b = a.split("/")
+    c = float(b[0])/float(b[1])
+    lon = tags['GPS GPSLongitude'].values[0].num + (tags['GPS GPSLongitude'].values[1].num + (c/60))/60
     lonRef = tags['GPS GPSLongitudeRef'].values.encode('ascii', 'ingore')
-    lat = tags['GPS GPSLatitude'].values[0].num
+    a = `tags['GPS GPSLatitude'].values[2]`
+    b = a.split("/")
+    c = float(b[0])/float(b[1])
+    lat = tags['GPS GPSLatitude'].values[0].num + (tags['GPS GPSLatitude'].values[1].num + (c/60))/60
     latRef = tags['GPS GPSLatitudeRef'].values.encode('ascii', 'ingore')
-
+    print lat, lon
 
     if latRef == 'S':
         lat = lat * -1
@@ -54,7 +61,7 @@ if __name__ == "__main__":
     imageinput = 'geotest2.jpg'
     outputdic = getConceptsinImage(imageinput)
 
-    date = tags['Image DateTime'].values.encode('ascii', 'ignore')
+    date = tags['EXIF DateTimeOriginal'].values.encode('ascii', 'ignore')
     print date
     utime = time.mktime(datetime.datetime.strptime(date, "%Y:%m:%d %H:%M:%S").timetuple())
 
@@ -76,6 +83,23 @@ if __name__ == "__main__":
     if avgTemp > 303.15:
         outputdic['hot'] = 1
 
+    API_KEY = 'AIzaSyBa-6RYXtajgQ9vL2f-Y6cOP5q_mFsOSeM'
+
+    radius_search_json = 'https://maps.googleapis.com/maps/api/place/radarsearch/json?location='+ `lat` +','+ `lon` +'&radius=100&type=type&key=' + API_KEY
+    # print radius_search_json
+    rsj = requests.get(radius_search_json)
+    rsjt = json.loads(rsj.text)
+
+    # print rsjt
+
+    for place in rsjt['results']:
+        place_id = place['place_id']
+        place_search_json = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=' + place_id + '&key=' + API_KEY
+        psj = requests.get(place_search_json)
+        psjt = json.loads(psj.text)
+        outputdic[psjt['result']['name']] = 1
+        # print psjt['result']['name']
+    
     concepts = outputdic.keys()
     probvals = outputdic.values()
     print(concepts)
