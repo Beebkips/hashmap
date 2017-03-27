@@ -24,12 +24,12 @@ def getConceptsinImage( imageinput ):
 	return probconcept
 #print(res['outputs'][0]['data']['concepts'][0]['name'])
 
-if __name__ == "__main__":
+def getJsonFromImage( imageinput ):
     # call = requests.get('http://api.openweathermap.org/data/2.5/weather?lat=47&lon=-122&APPID=045d20e4a83f4fe580531981ca805215')
     # data = json.loads(call.text)
     # print data
 
-    f = open('geotest.jpg', 'rb')
+    """f = open(imageinput, 'rb')
     tags = exifread.process_file(f)
     # print tags.keys()
 
@@ -56,12 +56,11 @@ if __name__ == "__main__":
     requrl = 'http://api.openweathermap.org/data/2.5/weather?lat=' + `lat` + '&lon=' + `lon` + '&APPID=045d20e4a83f4fe580531981ca805215'
     call2 = requests.get(requrl)
     data2 = json.loads(call2.text)
-    # print data2
+    # print data2"""
 
-    imageinput = 'geotest2.jpg'
     outputdic = getConceptsinImage(imageinput)
 
-    date = tags['EXIF DateTimeOriginal'].values.encode('ascii', 'ignore')
+    """date = tags['EXIF DateTimeOriginal'].values.encode('ascii', 'ignore')
     print date
     utime = time.mktime(datetime.datetime.strptime(date, "%Y:%m:%d %H:%M:%S").timetuple())
 
@@ -99,7 +98,7 @@ if __name__ == "__main__":
         psjt = json.loads(psj.text)
         outputdic[psjt['result']['name']] = 1
         # print psjt['result']['name']
-    
+    """
     concepts = outputdic.keys()
     probvals = outputdic.values()
     print(concepts)
@@ -108,3 +107,5 @@ if __name__ == "__main__":
     with open('hashes.json', 'w') as fp:
         json_string = json.dumps(outputdic)
         fp.write(json_string)
+    
+    return json_string
